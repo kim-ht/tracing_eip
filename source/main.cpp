@@ -1,10 +1,14 @@
 #include "./tracer/tracer.h"
 
 int main(void) {
-    Tracer tracer;
+    Tracer *tracer = new Tracer();
 
-    tracer.RunProgram("./test", NULL, NULL);
-    while ( tracer.StepInto() != FAILED_TO_STEP_INTO );
+    tracer->RunProgram("./challenge", NULL, NULL);
+    cout << "starting StepInto()" << endl;
+    while ( tracer->StepInto() != FAILED_TO_STEP_INTO );
+    cout << "starting PrintRIPs()" << endl;
+    tracer->PrintRIPs();
+    delete(tracer);
 
     return 0;
 }

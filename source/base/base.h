@@ -7,6 +7,7 @@
 /* include */
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 #include <stdio.h>
 #include <stdlib.h>

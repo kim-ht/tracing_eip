@@ -6,8 +6,7 @@
 /* public */
 Tracer::Tracer() {
     child_pid_ = -1;
-    orig_rax_ = 0;
-    orig_rip_ = 0;
+    rips_.clear();
 }
 
 Tracer::~Tracer() {
@@ -36,10 +35,20 @@ int Tracer::RunProgram(const char *path, char *const argv[], char *const envp[])
 }
 
 int Tracer::StepInto() {
-    int status;
     /* wait until done executing a code  */
+    int status;
     waitpid(child_pid_, &status, WUNTRACED);
-    if ( WIFEXITED(status) ) {
+    if ( WIFSIGNALED(status) || WIFEXITED(status) ) {
+        return FAILED_TO_STEP_INTO;
+    }
+    /* check if the tracee is crashed */
+    siginfo_t siginfo;
+    if ( ptrace(PTRACE_GETSIGINFO, child_pid_, NULL, &siginfo) == -1 ) {
+        rips_.push_back(regs_.rip);
+        return FAILED_TO_STEP_INTO;
+    }
+    int signo = siginfo.si_signo;
+    if ( signo == SIGILL || signo == SIGSEGV || signo == SIGFPE || signo == SIGCHLD ) {
         return FAILED_TO_STEP_INTO;
     }
     /* handle before step into */
@@ -47,27 +56,26 @@ int Tracer::StepInto() {
         return FAILED_TO_STEP_INTO;
     }
     /* step into */
-    ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL);
+    if ( ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL) == -1 ) {
+        return FAILED_TO_STEP_INTO;
+    }
     return SUCCESS_TO_STEP_INTO;
 }
 
-
+void Tracer::PrintRIPs() {
+    for ( vector<long>::iterator tmp = rips_.begin(); tmp != rips_.end(); ++tmp ) {
+        cout << "0x" << hex << *tmp << endl;
+    }
+}
 
 /* private */
-long Tracer::GetCurrentRAX() {
-    return orig_rax_;
-}
-
-long Tracer::GetCurrentRIP() {
-    return orig_rip_;
-}
-
 int Tracer::HandleStepInto() {
-    orig_rip_ = ptrace(PTRACE_PEEKUSER, child_pid_, 8 * RIP, NULL);
-    if ( errno ) {
+    /* get current registers */
+    if ( ptrace(PTRACE_GETREGS, child_pid_, NULL, &regs_) == -1 ) {
         return FAILED_TO_HANDLE_STEP_INTO;
     }
-    cout << "current pc: " << hex << orig_rip_ << endl;
+    /* push current rip to rips_ vector */
+    rips_.push_back(regs_.rip);
     return SUCCESS_TO_HANDLE_STEP_INTO;
 }
 
