@@ -1,13 +1,17 @@
+/* main.cpp
+ * by kimht
+ */
 #include "./tracer/tracer.h"
 
-int main(void) {
-    Tracer *tracer = new Tracer();
+int main(int argc, char *argv[]) {
+    if ( argc != 2 ) {
+        cout << "usage >> " << argv[0] << " [program_path]" << endl;
+        return 0;
+    }
 
-    tracer->RunProgram("./challenge", NULL, NULL);
-    cout << "starting StepInto()" << endl;
-    while ( tracer->StepInto() != FAILED_TO_STEP_INTO );
-    cout << "starting PrintRIPs()" << endl;
-    tracer->PrintRIPs();
+    Tracer *tracer = new Tracer();
+    cout << "starting tracing rip of " << argv[1]<< endl;
+    tracer->TraceProgram(argv[1], NULL, NULL);
     delete(tracer);
 
     return 0;
