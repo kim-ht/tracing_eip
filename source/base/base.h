@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <sys/user.h>
 #include <sys/reg.h>
+#include <sys/uio.h>
 
 using namespace std;
 

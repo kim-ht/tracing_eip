@@ -26,6 +26,12 @@
 #define FAILED_TO_END_LOGGING_RIP       0
 #define SUCCESS_TO_END_LOGGING_RIP      1
 
+#define FAILED_TO_IDENTIFY_BIT_MODE     0
+#define SUCCESS_TO_IDENTIFY_BIT_MODE    1
+
+#define MODE_I386       0
+#define MODE_X86_64     1
+
 /* class */
 class Tracer {
 public:
@@ -33,10 +39,13 @@ public:
     int TraceProgram(const char *path, char *const argv[], char *const envp[]);
 
 private:
-    string log_path_;
+    string program_path_;
     pid_t child_pid_;
+    int bit_mode_;
+    string log_path_;
     ofstream log_file_;
 
+    int IdentifyBitMode(const char *bin_path);
     int StartLoggingRIP();
     void LogRIP(long rip);
     void EndLoggingRIP();
