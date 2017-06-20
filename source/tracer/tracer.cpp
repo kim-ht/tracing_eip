@@ -3,78 +3,112 @@
  */
 #include "./tracer.h"
 
-/* public */
-Tracer::Tracer() {
-    child_pid_ = -1;
-    bit_mode_ = MODE_I386;
-    log_path_ = "";
+Tracer *Tracer::instance = 0;
+
+/////////////
+/// public
+/////////////
+
+/*
+ * GetInstance - For singleton.
+ */
+Tracer *Tracer::GetInstance() {
+    if ( !instance ) {
+        instance = new Tracer();
+    }
+    return instance;
 }
 
-int Tracer::TraceProgram(const char *path, char *const argv[], char *const envp[]) {
-    /* identify 32bit or 64bit binary */
+/*
+ * StartTracingProgram  - Start tracing a program. child. 
+ *
+ * @path                - The path of the program to be traced.
+ * @argv                - The argv which will be delivered to tracee program.
+ * @envp                - The envp which will be delivered to tracee program.
+ * @return              - SUCCESS_TO_START_TRACE_PROGRAM(0) on success; FAILED_TO_START_TRACE_PROGRAM(-1) on failure
+ */
+int Tracer::StartTracingProgram(const char *path, char *const argv[], char *const envp[]) {
+
+    // identify 32bit or 64bit binary
     if ( IdentifyBitMode(path) == FAILED_TO_IDENTIFY_BIT_MODE ) {
-        perror("Tracer::RunProgram() failed");
-        cout << "  --> IdentifyBitMode(path) == FAILED_TO_IDENTIFY_BIT_MODE" << endl;
-        return FAILED_TO_RUN_PROGRAM;
+        perror("Tracer::StartTracingProgram() failed");
+        return FAILED_TO_START_TRACE_PROGRAM;
     }
+
     pid_t pid = fork();
-    /* failedto fork() */
-    if ( pid == -1 ) {
-        perror("Tracer::RunProgram() failed");
-        cout << " --> failed to fork()" << endl;
-        return FAILED_TO_RUN_PROGRAM;
-    /* child */
+
+    /* if fork() is failed */
+    if ( pid < 0 ) {
+        perror("Tracer::StartTracingProgram() failed");
+        return FAILED_TO_START_TRACE_PROGRAM;
+
+    /* if pid is child's pid */
     } else if ( pid == 0 ) {
-        if ( ptrace(PTRACE_TRACEME, NULL, NULL, NULL) == -1 ) {
-            perror("Tracer::RunProgram() failed");
-            cout << "  --> ptrace(PTRACE_TRACEME, NULL, NULL, NULL) == -1" << endl;
-            return FAILED_TO_RUN_PROGRAM;
+        if ( ptrace(PTRACE_TRACEME, 0, 0, 0) < 0 ) {
+            perror("Tracer::StartTracingProgram() failed");
+            return FAILED_TO_START_TRACE_PROGRAM;
         }
-        if ( execvpe(path, argv, envp) == -1 ) {
-            perror("Tracer::RunProgram() failed");
-            cout << "  --> execvpe(path, argv, envp) == -1" << endl;
-            return FAILED_TO_RUN_PROGRAM;
+        if ( execvpe(path, argv, envp) < 0 ) {
+            perror("Tracer::StartTracingProgram() failed");
+            return FAILED_TO_START_TRACE_PROGRAM;
         }
-    /* parent */
+
+    /* if pid is parent's pid */
     } else {
-        if ( wait(NULL) == -1 ) {
-            perror("Tracer::RunProgram() failed");
-            cout << "  --> wait(NULL) == -1" << endl;
-            return FAILED_TO_RUN_PROGRAM;
+        if ( wait(0) < 0 ) {
+            perror("Tracer::StartTracingProgram() failed");
+            return FAILED_TO_START_TRACE_PROGRAM;
         }
         child_pid_ = pid;
-        if ( ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL) == -1 ) {
-            perror("Tracer::RunProgram() failed");
-            cout << "  --> ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL) == -1" << endl;
-            return FAILED_TO_RUN_PROGRAM; 
+        if ( ptrace(PTRACE_SINGLESTEP, child_pid_, 0, 0) < 0 ) {
+            perror("Tracer::StartTracingProgram() failed");
+            return FAILED_TO_START_TRACE_PROGRAM; 
         }
-        /* start logging/tracing rip */
-        log_path_ = (string)path + ".rip";
-        if ( StartLoggingRIP() == FAILED_TO_START_LOGGING_RIP ) {
-            perror("Tracer::RunProgram() failed");
-            cout << "  --> StartLoggingRIP() == FAILED_TO_START_LOGGING_RIP" << endl;
-            return FAILED_TO_RUN_PROGRAM;
+
+        // start logging/tracing rip
+        if ( Logger::GetInstance()->OpenLogFile(((string)path + ".pc").c_str(), 4 + 4*bit_mode_) == FAILED_TO_OPEN_LOG_FILE ) {
+            perror("Tracer::StartTracingProgram() failed");
+            return FAILED_TO_START_TRACE_PROGRAM;
         }
-        /* step into loop */
-        while ( StepInto() != FAILED_TO_STEP_INTO );
-        EndLoggingRIP();
+
+        // single step loop
+        RepeatSingleStep();
+        Logger::GetInstance()->CloseLogFile();
     }
-    return SUCCESS_TO_RUN_PROGRAM;
+    return SUCCESS_TO_START_TRACE_PROGRAM;
 }
 
-/* private */
+//////////////
+/// private
+//////////////
+
+/*
+ * Tracer - The constructor.
+ */
+Tracer::Tracer() {
+}
+
+/*
+ * IdentifyBitMode  - Identifies arhctecture(32 or 64) that given elf requires.
+ *
+ * @bin_path        - The path of elf binary file.
+ * @return          - SUCCESS_TO_IDENTIFY_BIT_MODE(0) on success; FAILED_TO_IDENTIFY_BIT_MODE(-1) on failure
+ */
 int Tracer::IdentifyBitMode(const char *bin_path) {
-    /* open binary file */
+
+    // open binary file
     ifstream bin_file(bin_path);
     if ( bin_file.is_open() == false ) {
         perror("Tracer::IdentifyBitMode() failed");
         cout << " --> bin_file.is_open() == false" << endl;
         return FAILED_TO_IDENTIFY_BIT_MODE;
     }
-    /* read one byte from elf header that means 32 or 64 */
+
+    // read one byte from elf header that means 32 or 64
     bin_file.seekg(4, ios::beg);
     char mode;
     bin_file.read(&mode, 1);
+
     if ( mode == 1 ) {
         bit_mode_ = MODE_I386;
     } else if ( mode == 2 ) {
@@ -88,73 +122,69 @@ int Tracer::IdentifyBitMode(const char *bin_path) {
     return SUCCESS_TO_IDENTIFY_BIT_MODE;
 }
 
-int Tracer::StartLoggingRIP() {
-    /* create log file that its name is tracee's path.rip */
-    log_file_.open(log_path_.c_str(), ios::out | ios::binary);
-    if ( log_file_.is_open() == false ) {
-        perror("Tracer::StartLoggingRIP() failed");
-        cout << "  --> log_file_.is_open() == false" << endl;
-        return FAILED_TO_START_LOGGING_RIP;
-    }
-    return SUCCESS_TO_START_LOGGING_RIP;
-}
-
-void Tracer::LogRIP(long rip) {
-    log_file_.write((char *)&rip, sizeof(long));
-}
-
-void Tracer::EndLoggingRIP() {
-    log_file_.close();
-}
-
-int Tracer::StepInto() {
-    /* wait until done executing a code  */
+/*
+ * RepeatSingleStep - repeats single step and handles it.
+ *
+ * @return          - SUCCESS_TO_STEP_INTO
+ */
+int Tracer::RepeatSingleStep() {
     int status;
-    waitpid(child_pid_, &status, WUNTRACED);
-    if ( WIFSIGNALED(status) || WIFEXITED(status) ) {
-        perror("Tracer::StepInto() failed");
-        cout << "  --> WIFSIGNALED(status) || WIFEXITED(status)" << endl;
-        return FAILED_TO_STEP_INTO;
+    if ( waitpid(child_pid_, &status, 0) < 0 ) {
+        perror("Tracer::RepeatSingleStep() failed");
+        return FAILED_TO_REPEAT_SINGLE_STEP;
     }
-    /* check if the tracee is crashed */
-    siginfo_t siginfo;
-    if ( ptrace(PTRACE_GETSIGINFO, child_pid_, NULL, &siginfo) == -1 ) {
-        perror("Tracer::StepInto() failed");
-        cout << "  --> ptrace(PTRACE_GETSIGINFO, child_pid_, NULL, &siginfo) == -1 " << endl;
-        return FAILED_TO_STEP_INTO;
+
+    while ( WIFSTOPPED(status) ) {
+
+        // check if the tracee is crashed
+        siginfo_t siginfo;
+        if ( ptrace(PTRACE_GETSIGINFO, child_pid_, 0, &siginfo) < 0 ) {
+            perror("Tracer::RepeatSingleStep() failed");
+            return FAILED_TO_REPEAT_SINGLE_STEP;
+        }
+        int signo = siginfo.si_signo;
+        if ( signo == SIGILL || signo == SIGSEGV || signo == SIGFPE || signo == SIGCHLD ) {
+            perror("Tracer::RepeatSingleStep() failed");
+            return FAILED_TO_REPEAT_SINGLE_STEP;
+        }
+
+        // handle before step into like code hooking
+        if ( HandlerSingleStep() == FAILED_TO_HANDER_SINGLE_STEP ) {
+            perror("Tracer::RepeatSingleStep() failed");
+            return FAILED_TO_REPEAT_SINGLE_STEP;
+        }
+
+        // single step
+        if ( ptrace(PTRACE_SINGLESTEP, child_pid_, 0, 0) < 0 ) {
+            perror("Tracer::RepeatSingleStep() failed");
+            return FAILED_TO_REPEAT_SINGLE_STEP;
+        }
+
+        // waitpid
+        if ( waitpid(child_pid_, &status, 0) < 0 ) {
+            perror("Tracer::RepeatSingleStep() failed");
+            return FAILED_TO_REPEAT_SINGLE_STEP;
+        }
     }
-    int signo = siginfo.si_signo;
-    if ( signo == SIGILL || signo == SIGSEGV || signo == SIGFPE || signo == SIGCHLD ) {
-        perror("Tracer::StepInto() failed");
-        cout << "  --> signo == SIGILL || signo == SIGSEGV || signo == SIGFPE || signo"\
-                " == SIGCHLD" << endl;
-        return FAILED_TO_STEP_INTO;
-    }
-    /* handle before step into like code hooking */
-    if ( HandleDuringStepInto() == FAILED_TO_HANDLE_DURING_STEP_INTO ) {
-        perror("Tracer::StepInto() failed");
-        cout << "  --> HandleDuringStepInto() == FAILED_TO_HANDLE_DURING_STEP_INTO" << endl;
-        return FAILED_TO_STEP_INTO;
-    }
-    /* step into */
-    if ( ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL) == -1 ) {
-        perror("Tracer::StepInto() failed");
-        cout << "  --> ptrace(PTRACE_SINGLESTEP, child_pid_, NULL, NULL) == -1" << endl;
-        return FAILED_TO_STEP_INTO;
-    }
-    return SUCCESS_TO_STEP_INTO;
+    return SUCCESS_TO_HANDER_SINGLE_STEP;
 }
 
-int Tracer::HandleDuringStepInto() {
-    /* get current registers and log rip */
+/*
+ * HanderSingleStep - The hander that occurs just before single step.
+ *
+ * @return          - SUCCESS_TO_HANDER_SINGLE_STEP(0) on success; FAILED_TO_HANDER_SINGLE_STEP(-1) on failure;
+ */
+int Tracer::HandlerSingleStep() {
+
+    // get current registers
     struct user_regs_struct regs;
-    if ( ptrace(PTRACE_GETREGS, child_pid_, NULL, &regs) == -1 ) {
-        perror("Tracer::HandleDuringStepInto() failed");
-        cout << "  --> ptrace(PTRACE_GETREGS, child_pid_, NULL, &regs) == -1" << endl;
-        return FAILED_TO_HANDLE_DURING_STEP_INTO;
+    if ( ptrace(PTRACE_GETREGS, child_pid_, 0, &regs) < 0 ) {
+        perror("Tracer::HandlerSingleStep() failed");
+        return FAILED_TO_HANDER_SINGLE_STEP;
     }
-    LogRIP(regs.rip);
-    /* append rip to it's rip tracing log */
-    return SUCCESS_TO_HANDLE_DURING_STEP_INTO;
+
+    // record the rip
+    Logger::GetInstance()->RecordPC(regs.rip);
+    return SUCCESS_TO_HANDER_SINGLE_STEP;
 }
 

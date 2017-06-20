@@ -1,13 +1,13 @@
 /* main.cpp
- * by kimht
+ * -lby kimht
  */
 #include "./tracer/tracer.h"
 
 int main(int argc, char *argv[]) {
-    Tracer *tracer = new Tracer();
-    cout << "starting tracing rip of " << endl;
-    tracer->TraceProgram("./test", NULL, NULL);
-    delete(tracer);
+    Logger::GetInstance();
+    Tracer::GetInstance();
+
+    Tracer::GetInstance()->StartTracingProgram("./challenge", NULL, NULL);
 
     return 0;
 }

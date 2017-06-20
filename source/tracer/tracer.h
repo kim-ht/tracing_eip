@@ -4,53 +4,51 @@
 #ifndef _TRACER_TRACER_H_
 #define _TRACER_TRACER_H_
 
-/* include */
+//////////////
+/// include
+//////////////
 #include "../base/base.h"
+#include "../logger/logger.h"
 
-/* define */
-#define FAILED_TO_RUN_PROGRAM       0
-#define SUCCESS_TO_RUN_PROGRAM      1
+/////////////
+/// define
+/////////////
+#define FAILED_TO_START_TRACE_PROGRAM       -1
+#define SUCCESS_TO_START_TRACE_PROGRAM      0
 
-#define FAILED_TO_STEP_INTO     0
-#define SUCCESS_TO_STEP_INTO    1
+#define FAILED_TO_REPEAT_SINGLE_STEP        -1
+#define SUCCESS_TO_REPEAT_SINGLE_STEP       0
 
-#define FAILED_TO_HANDLE_DURING_STEP_INTO       0
-#define SUCCESS_TO_HANDLE_DURING_STEP_INTO      1
+#define FAILED_TO_HANDER_SINGLE_STEP        -1
+#define SUCCESS_TO_HANDER_SINGLE_STEP       0
 
-#define FAILED_TO_GET_REGISTER      0
-#define SUCCESS_TO_GET_REGISTER     1
+#define FAILED_TO_GET_REGISTER      -1
+#define SUCCESS_TO_GET_REGISTER     0
 
-#define FAILED_TO_START_LOGGING_RIP     0
-#define SUCCESS_TO_START_LOGGING_RIP    1
-
-#define FAILED_TO_END_LOGGING_RIP       0
-#define SUCCESS_TO_END_LOGGING_RIP      1
-
-#define FAILED_TO_IDENTIFY_BIT_MODE     0
-#define SUCCESS_TO_IDENTIFY_BIT_MODE    1
+#define FAILED_TO_IDENTIFY_BIT_MODE     -1
+#define SUCCESS_TO_IDENTIFY_BIT_MODE    0
 
 #define MODE_I386       0
 #define MODE_X86_64     1
 
-/* class */
+////////////
+/// class
+////////////
 class Tracer {
 public:
-    Tracer();
-    int TraceProgram(const char *path, char *const argv[], char *const envp[]);
+    static Tracer *GetInstance();
+    int StartTracingProgram(const char *path, char *const argv[], char *const envp[]);
 
 private:
+    static Tracer *instance;
     string program_path_;
     pid_t child_pid_;
     int bit_mode_;
-    string log_path_;
-    ofstream log_file_;
 
+    Tracer();
     int IdentifyBitMode(const char *bin_path);
-    int StartLoggingRIP();
-    void LogRIP(long rip);
-    void EndLoggingRIP();
-    int StepInto();
-    int HandleDuringStepInto();
+    int RepeatSingleStep();
+    int HandlerSingleStep();
 };
 
 #endif
