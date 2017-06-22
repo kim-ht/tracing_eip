@@ -1,0 +1,139 @@
+4003e0	xor	ebp, ebp
+4003e2	mov	r9, rdx
+4003e5	pop	rsi
+4003e6	mov	rdx, rsp
+4003e9	and	rsp, 0xfffffffffffffff0
+4003ed	push	rax
+4003ee	push	rsp
+4003ef	mov	r8, 0x400580
+4003f6	mov	rcx, 0x400510
+4003fd	mov	rdi, 0x4004d6
+400404	call	0xffffffffffffffbc
+4003c0	jmp	qword ptr [rip + 0x200c52]
+4003c6	push	0
+4003cb	jmp	0xffffffffffffffe5
+4003b0	push	qword ptr [rip + 0x200c52]
+4003b6	jmp	qword ptr [rip + 0x200c54]
+400510	push	r15
+400512	push	r14
+400514	mov	r15d, edi
+400517	push	r13
+400519	push	r12
+40051b	lea	r12, qword ptr [rip + 0x2008ee]
+400522	push	rbp
+400523	lea	rbp, qword ptr [rip + 0x2008ee]
+40052a	push	rbx
+40052b	mov	r14, rsi
+40052e	mov	r13, rdx
+400531	sub	rbp, r12
+400534	sub	rsp, 8
+400538	sar	rbp, 3
+40053c	call	0xfffffffffffffe54
+400390	sub	rsp, 8
+400394	mov	rax, qword ptr [rip + 0x200c5d]
+40039b	test	rax, rax
+40039e	je	7
+4003a5	add	rsp, 8
+4003a9	ret	
+400541	test	rbp, rbp
+400544	je	0x22
+400546	xor	ebx, ebx
+400548	nop	dword ptr [rax + rax]
+400550	mov	rdx, r13
+400553	mov	rsi, r14
+400556	mov	edi, r15d
+400559	call	qword ptr [r12 + rbx*8]
+4004b0	mov	edi, 0x600e20
+4004b5	cmp	qword ptr [rdi], 0
+4004b9	jne	7
+4004bb	jmp	0xffffffffffffff95
+400450	mov	esi, 0x601030
+400455	push	rbp
+400456	sub	rsi, 0x601030
+40045d	sar	rsi, 3
+400461	mov	rbp, rsp
+400464	mov	rax, rsi
+400467	shr	rax, 0x3f
+40046b	add	rsi, rax
+40046e	sar	rsi, 1
+400471	je	0x17
+400488	pop	rbp
+400489	ret	
+40055d	add	rbx, 1
+400561	cmp	rbx, rbp
+400564	jne	0xffffffffffffffec
+400566	add	rsp, 8
+40056a	pop	rbx
+40056b	pop	rbp
+40056c	pop	r12
+40056e	pop	r13
+400570	pop	r14
+400572	pop	r15
+400574	ret	
+4004d6	push	rbp
+4004d7	mov	rbp, rsp
+4004da	nop	
+4004db	nop	
+4004dc	nop	
+4004dd	nop	
+4004de	nop	
+4004df	nop	
+4004e0	nop	
+4004e1	nop	
+4004e2	nop	
+4004e3	nop	
+4004e4	nop	
+4004e5	nop	
+4004e6	nop	
+4004e7	nop	
+4004e8	nop	
+4004e9	nop	
+4004ea	nop	
+4004eb	nop	
+4004ec	nop	
+4004ed	nop	
+4004ee	nop	
+4004ef	nop	
+4004f0	nop	
+4004f1	nop	
+4004f2	nop	
+4004f3	nop	
+4004f4	nop	
+4004f5	nop	
+4004f6	nop	
+4004f7	nop	
+4004f8	nop	
+4004f9	nop	
+4004fa	nop	
+4004fb	nop	
+4004fc	nop	
+4004fd	nop	
+4004fe	nop	
+4004ff	nop	
+400500	nop	
+400501	nop	
+400502	nop	
+400503	nop	
+400504	nop	
+400505	mov	eax, 0
+40050a	pop	rbp
+40050b	ret	
+400490	cmp	byte ptr [rip + 0x200b99], 0
+400497	jne	0x13
+400499	push	rbp
+40049a	mov	rbp, rsp
+40049d	call	0xffffffffffffff73
+400410	mov	eax, 0x601037
+400415	push	rbp
+400416	sub	rax, 0x601030
+40041c	cmp	rax, 0xe
+400420	mov	rbp, rsp
+400423	jbe	0x1d
+400440	pop	rbp
+400441	ret	
+4004a2	pop	rbp
+4004a3	mov	byte ptr [rip + 0x200b86], 1
+4004aa	ret	
+400584	sub	rsp, 8
+400588	add	rsp, 8
+40058c	ret	

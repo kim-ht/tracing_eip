@@ -68,15 +68,22 @@ bool Tracer::StartTracingProgram(const char *path, char *const argv[], char *con
             HANDLE_ERROR("Tracer::StartTracingProgram() failure", false);
         }
 
-        // Do single step.
         child_pid_ = pid;
+
+        // Do single step.
         i = ptrace(PTRACE_SINGLESTEP, child_pid_, 0, 0);
         if ( i < 0 ) {
-            HANDLE_ERROR("Tracer::RepeatSingleStep() failure", false);
+            HANDLE_ERROR("Tracer::StartTracingProgram() failure", false);
         }
 
         // Starts logging/tracing program counter.
         b = Logger::GetInstance()->OpenLogFile(((string)path + ".pc").c_str(), 4 + 4*arch_);
+        if ( !b ) {
+            HANDLE_ERROR("Tracer::StartTracingProgram() failure", false);
+        }
+
+        // Starts disassembler.
+        b = Disassembler::GetInstance()->OpenCS(arch_);
         if ( !b ) {
             HANDLE_ERROR("Tracer::StartTracingProgram() failure", false);
         }
@@ -86,6 +93,7 @@ bool Tracer::StartTracingProgram(const char *path, char *const argv[], char *con
 
         // End up logging.
         Logger::GetInstance()->CloseLogFile();
+        Disassembler::GetInstance()->CloseCS();
     }
 
     return true;
@@ -198,7 +206,47 @@ bool Tracer::HandlerSingleStep() {
     }
 
     // Record the program counter.
-    Logger::GetInstance()->RecordPC(regs.rip);
+    if ( (regs.rip & 0xf7000000) != 0xf7000000 ) {
+
+        // Get code and disassemble it.
+        unsigned char *code = 0; // It should be free'ed after using it.
+        GetDataFromPID(child_pid_, (uint64_t)regs.rip, 15, &code);
+
+        string disas;
+        Disassembler::GetInstance()->DisassembleCode(code, disas);
+
+        free(code);
+
+        Logger::GetInstance()->RecordCycle((uint64_t)regs.rip, disas);
+    }
+
+    return true;
+}
+
+/*
+ * GetDataFromPID - Gets data from a process specificed by PID.
+ *
+ * @pid - The PID to be read.
+ * @addr - The address to be read from.
+ * @size - The size to read.
+ * @output - pointer to write read data.
+ */
+bool Tracer::GetDataFromPID(long pid, uint64_t addr, size_t size, unsigned char **output) {
+    string path = "/proc/" + to_string(pid) + "/mem";
+
+    int fd = open(path.c_str(), O_RDONLY);
+
+    *output = (unsigned char *)malloc(size);
+    if ( !(*output) ) {
+        HANDLE_ERROR("Tracer::GetDataFromPID failure", false);
+    }
+
+    int i = pread(fd, *output, size, addr);
+    if ( i < 0 ) {
+        HANDLE_ERROR("Tracer::GetDataFromPID failure", false);
+    }
+
+    close(fd);
 
     return true;
 }

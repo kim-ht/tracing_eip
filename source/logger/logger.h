@@ -22,7 +22,7 @@ class Logger {
 public:
     static Logger *GetInstance();
     bool OpenLogFile(const char *log_path, size_t pc_size);
-    void RecordPC(long pc);
+    void RecordCycle(uint64_t pc, const string disas);
     void CloseLogFile();
 
 private:

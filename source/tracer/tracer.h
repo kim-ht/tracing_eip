@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "../base/base.h"
 #include "../logger/logger.h"
+#include "../disassembler/disassembler.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /// define
@@ -34,6 +35,8 @@ private:
     bool IdentifyArch(const char *bin_path);
     bool RepeatSingleStep();
     bool HandlerSingleStep();
+    bool GetDataFromPID(long pid, uint64_t addr, size_t size, unsigned char **output);
+    bool FreeCode();
 };
 
 #endif

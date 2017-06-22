@@ -9,17 +9,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
+#include <typeinfo>
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/user.h>
 #include <sys/reg.h>
 #include <sys/uio.h>
+
+#include <capstone/capstone.h>
 
 using namespace std;
 

@@ -6,8 +6,9 @@
 int main(int argc, char *argv[]) {
     Logger::GetInstance();
     Tracer::GetInstance();
+    Disassembler::GetInstance();
 
-    Tracer::GetInstance()->StartTracingProgram("./challenge", NULL, NULL);
+    Tracer::GetInstance()->StartTracingProgram("/home/kimht/gits/tracing_eip/source/challenge", NULL, NULL);
 
     return 0;
 }

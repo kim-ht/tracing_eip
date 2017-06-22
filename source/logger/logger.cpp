@@ -43,12 +43,12 @@ bool Logger::OpenLogFile(const char *log_path, size_t pc_size) {
 }
 
 /*
- * RecordPC - Record the program counter.
+ * RecordCycle  - Record the program counter and disassembled code.
  *
- * @pc      - The program counter which will be logged.
+ * @pc          - The program counter which will be logged.
  */
-void Logger::RecordPC(long pc) {
-    log_file_.write((char *)&pc, pc_size_);
+void Logger::RecordCycle(uint64_t pc, const string disas) {
+    log_file_ << hex << pc << "\t" << disas << "\n";
 }
 
 /*

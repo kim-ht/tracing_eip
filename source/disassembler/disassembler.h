@@ -4,33 +4,32 @@
 #ifndef _DISASSEMBLER_DISASSEMBLER_H_
 #define _DISASSEMBLER_DISASSEMBLER_H_
 
-//////////////
+///////////////////////////////////////////////////////////////////////////////
 /// include
-//////////////
+///////////////////////////////////////////////////////////////////////////////
 #include "../base/base.h"
 
-/////////////
+///////////////////////////////////////////////////////////////////////////////
 /// define
-/////////////
+///////////////////////////////////////////////////////////////////////////////
+#define ARCH_I386       0
+#define ARCH_X86_64     1
 
-////////////
+///////////////////////////////////////////////////////////////////////////////
 /// class
-////////////
-class Tracer {
+///////////////////////////////////////////////////////////////////////////////
+class Disassembler {
 public:
-    static Tracer *GetInstance();
-    int StartTracingProgram(const char *path, char *const argv[], char *const envp[]);
+    static Disassembler *GetInstance();
+    bool OpenCS(int arch);
+    bool DisassembleCode(const unsigned char *code, string& output);
+    void CloseCS();
 
 private:
-    static Tracer *instance;
-    string program_path_;
-    pid_t child_pid_;
-    int bit_mode_;
+    static Disassembler *instance;
+    csh cs_handle_;
 
-    Tracer();
-    int IdentifyBitMode(const char *bin_path);
-    int RepeatSingleStep();
-    int HandlerSingleStep();
+    Disassembler();
 };
 
 #endif
