@@ -22,15 +22,19 @@ class Disassembler {
 public:
     static Disassembler *GetInstance();
     bool OpenCS(int arch);
-    bool DisassembleCode(const unsigned char *code, string& output);
+    bool DisassembleCode(const unsigned char *code, uint64_t pc, string &out_mnemonic, string &out_op_str);
     void CloseCS();
+    bool IsBranchInstruction(string mnemonic);
 
 private:
     static Disassembler *instance;
     csh cs_handle_;
+    set<string> branch_insn_;
 
     Disassembler();
 };
+
+
 
 #endif
 

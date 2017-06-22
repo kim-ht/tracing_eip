@@ -9,7 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
-#include <typeinfo>
+#include <set>
+#include <vector>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +41,15 @@ using namespace std;
     perror(msg);  \
     return ret_val;  \
 }
+
+/// class
+struct Line {
+    uint64_t pc;
+    string mnemonic;
+    string op_str;
+    bool is_branch;
+    uint64_t level;
+};
 
 #endif
 

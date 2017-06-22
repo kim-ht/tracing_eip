@@ -107,6 +107,7 @@ bool Tracer::StartTracingProgram(const char *path, char *const argv[], char *con
  * Tracer - The constructor.
  */
 Tracer::Tracer() {
+    ret_addr_.empty();
 }
 
 /*
@@ -204,20 +205,40 @@ bool Tracer::HandlerSingleStep() {
     if ( i < 0 ) {
         HANDLE_ERROR("Tracer::HandlerSingleStep()", false);
     }
+    uint64_t pc = regs.rip;
 
-    // Record the program counter.
-    if ( (regs.rip & 0xf7000000) != 0xf7000000 ) {
+    // Record the line.
+    if ( (pc & 0x7f0000000000) != 0x7f0000000000 ) {
 
-        // Get code and disassemble it.
+        // Pop if current pc is an address that pushed to ret stack.
+        if ( !ret_addr_.empty() && pc == ret_addr_.back() ) {
+            PopRetAddr();
+        }
+
+        // Gets code from child process and disassemble it.
         unsigned char *code = 0; // It should be free'ed after using it.
-        GetDataFromPID(child_pid_, (uint64_t)regs.rip, 15, &code);
+        GetDataFromPID(child_pid_, (uint64_t)pc, 15, &code);
 
-        string disas;
-        Disassembler::GetInstance()->DisassembleCode(code, disas);
-
+        // Gets mnemonic and operand.
+        string mnemonic, op_str;
+        Disassembler::GetInstance()->DisassembleCode(code, pc, mnemonic, op_str);
         free(code);
 
-        Logger::GetInstance()->RecordCycle((uint64_t)regs.rip, disas);
+        // Organizes line.
+        Line line;
+        line.pc = pc;
+        line.mnemonic = mnemonic;
+        line.op_str = op_str;
+        line.is_branch = Disassembler::GetInstance()->IsBranchInstruction(mnemonic);
+        line.level = ret_addr_.size();
+
+        // Records.
+        Logger::GetInstance()->RecordLine(line);
+
+        // Pushes return address(pc + 5) if currenct instruction is call.
+        if ( line.mnemonic == "call" ) {
+            PushRetAddr(pc + 5);
+        }
     }
 
     return true;
@@ -249,5 +270,21 @@ bool Tracer::GetDataFromPID(long pid, uint64_t addr, size_t size, unsigned char 
     close(fd);
 
     return true;
+}
+
+/*
+ *
+ */
+void Tracer::PushRetAddr(uint64_t addr) {
+    ret_addr_.push_back(addr);
+}
+
+/*
+ *
+ */
+uint64_t Tracer::PopRetAddr() {
+    uint64_t tmp = ret_addr_.back();
+    ret_addr_.pop_back();
+    return tmp;
 }
 

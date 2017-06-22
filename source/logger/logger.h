@@ -8,6 +8,7 @@
 /// include
 ///////////////////////////////////////////////////////////////////////////////
 #include "../base/base.h"
+#include "../tracer/tracer.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /// define
@@ -22,7 +23,7 @@ class Logger {
 public:
     static Logger *GetInstance();
     bool OpenLogFile(const char *log_path, size_t pc_size);
-    void RecordCycle(uint64_t pc, const string disas);
+    void RecordLine(Line line);
     void CloseLogFile();
 
 private:

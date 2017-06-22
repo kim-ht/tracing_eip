@@ -1,0 +1,332 @@
+0x400c00	xor	ebp, ebp
+0x400c02	mov	r9, rdx
+0x400c05	pop	rsi
+0x400c06	mov	rdx, rsp
+0x400c09	and	rsp, 0xfffffffffffffff0
+0x400c0d	push	rax
+0x400c0e	push	rsp
+0x400c0f	mov	r8, 0x4085c0
+0x400c16	mov	rcx, 0x408550
+0x400c1d	mov	rdi, 0x40123c
+0x400c24	call	0x400b30
+  0x400b30	jmp	qword ptr [rip + 0x208e52]
+   |
+   V
+  0x400b36	push	8
+  0x400b3b	jmp	0x400aa0
+   |
+   V
+  0x400aa0	push	qword ptr [rip + 0x208e92]
+  0x400aa6	jmp	qword ptr [rip + 0x208e94]
+   |
+   V
+  0x408550	push	r15
+  0x408552	mov	r15d, edi
+  0x408555	push	r14
+  0x408557	mov	r14, rsi
+  0x40855a	push	r13
+  0x40855c	mov	r13, rdx
+  0x40855f	push	r12
+  0x408561	lea	r12, qword ptr [rip + 0x2011d8]
+  0x408568	push	rbp
+  0x408569	lea	rbp, qword ptr [rip + 0x2011d8]
+  0x408570	push	rbx
+  0x408571	sub	rbp, r12
+  0x408574	xor	ebx, ebx
+  0x408576	sar	rbp, 3
+  0x40857a	sub	rsp, 8
+  0x40857e	call	0x400a78
+    0x400a78	sub	rsp, 8
+    0x400a7c	mov	rax, qword ptr [rip + 0x208ea5]
+    0x400a83	test	rax, rax
+    0x400a86	je	0x400a8d
+     |
+     V
+    0x400a8d	add	rsp, 8
+    0x400a91	ret	
+     |
+     V
+  0x408583	test	rbp, rbp
+  0x408586	je	0x4085a6
+   |
+   V
+  0x408588	nop	dword ptr [rax + rax]
+  0x408590	mov	rdx, r13
+  0x408593	mov	rsi, r14
+  0x408596	mov	edi, r15d
+  0x408599	call	qword ptr [r12 + rbx*8]
+    0x400cd0	mov	edi, 0x609750
+    0x400cd5	cmp	qword ptr [rdi], 0
+    0x400cd9	jne	0x400ce0
+     |
+     V
+    0x400cdb	jmp	0x400c70
+     |
+     V
+    0x400c70	mov	esi, 0x609a20
+    0x400c75	push	rbp
+    0x400c76	sub	rsi, 0x609a20
+    0x400c7d	sar	rsi, 3
+    0x400c81	mov	rbp, rsp
+    0x400c84	mov	rax, rsi
+    0x400c87	shr	rax, 0x3f
+    0x400c8b	add	rsi, rax
+    0x400c8e	sar	rsi, 1
+    0x400c91	je	0x400ca8
+     |
+     V
+    0x400ca8	pop	rbp
+    0x400ca9	ret	
+     |
+     V
+    0x40859d	add	rbx, 1
+    0x4085a1	cmp	rbx, rbp
+    0x4085a4	jne	0x408590
+     |
+     V
+    0x4085a6	add	rsp, 8
+    0x4085aa	pop	rbx
+    0x4085ab	pop	rbp
+    0x4085ac	pop	r12
+    0x4085ae	pop	r13
+    0x4085b0	pop	r14
+    0x4085b2	pop	r15
+    0x4085b4	ret	
+     |
+     V
+    0x40123c	push	rbp
+    0x40123d	mov	rbp, rsp
+    0x401240	sub	rsp, 0x10
+    0x401244	mov	dword ptr [rbp - 4], 0
+    0x40124b	mov	eax, 0
+    0x401250	call	0x400f00
+      0x400f00	push	rbp
+      0x400f01	mov	rbp, rsp
+      0x400f04	mov	rax, qword ptr [rip + 0x208b35]
+      0x400f0b	mov	ecx, 0
+      0x400f10	mov	edx, 2
+      0x400f15	mov	esi, 0
+      0x400f1a	mov	rdi, rax
+      0x400f1d	call	0x400bb0
+        0x400bb0	jmp	qword ptr [rip + 0x208e12]
+         |
+         V
+        0x400bb6	push	0x10
+        0x400bbb	jmp	0x400aa0
+         |
+         V
+        0x400aa0	push	qword ptr [rip + 0x208e92]
+        0x400aa6	jmp	qword ptr [rip + 0x208e94]
+         |
+         V
+      0x400f22	test	eax, eax
+      0x400f24	je	0x400f3a
+       |
+       V
+      0x400f3a	mov	edx, 0x100
+      0x400f3f	mov	esi, 0
+      0x400f44	mov	edi, 0x609e80
+      0x400f49	call	0x400b10
+        0x400b10	jmp	qword ptr [rip + 0x208e62]
+         |
+         V
+        0x400b16	push	6
+        0x400b1b	jmp	0x400aa0
+         |
+         V
+        0x400aa0	push	qword ptr [rip + 0x208e92]
+        0x400aa6	jmp	qword ptr [rip + 0x208e94]
+         |
+         V
+      0x400f4e	nop	
+      0x400f4f	pop	rbp
+      0x400f50	ret	
+       |
+       V
+    0x401255	mov	eax, 0
+    0x40125a	call	0x400cf6
+      0x400cf6	push	rbp
+      0x400cf7	mov	rbp, rsp
+      0x400cfa	mov	rax, qword ptr [rip + 0x208d07]
+      0x400d01	mov	rsi, rax
+      0x400d04	mov	edi, 0x408be4
+      0x400d09	mov	eax, 0
+      0x400d0e	call	0x400b00
+        0x400b00	jmp	qword ptr [rip + 0x208e6a]
+         |
+         V
+        0x400b06	push	5
+        0x400b0b	jmp	0x400aa0
+         |
+         V
+        0x400aa0	push	qword ptr [rip + 0x208e92]
+        0x400aa6	jmp	qword ptr [rip + 0x208e94]
+         |
+         V
+      0x400d13	mov	rax, qword ptr [rip + 0x208cf6]
+      0x400d1a	mov	rsi, rax
+      0x400d1d	mov	edi, 0x408be4
+      0x400d22	mov	eax, 0
+      0x400d27	call	0x400b00
+        0x400b00	jmp	qword ptr [rip + 0x208e6a]
+         |
+         V
+      0x400d2c	mov	rax, qword ptr [rip + 0x208ce5]
+      0x400d33	mov	rsi, rax
+      0x400d36	mov	edi, 0x408be4
+      0x400d3b	mov	eax, 0
+      0x400d40	call	0x400b00
+        0x400b00	jmp	qword ptr [rip + 0x208e6a]
+         |
+         V
+      0x400d45	nop	
+      0x400d46	pop	rbp
+      0x400d47	ret	
+       |
+       V
+    0x40125f	nop	
+    0x401260	mov	eax, 0
+    0x401265	call	0x400ec8
+      0x400ec8	push	rbp
+      0x400ec9	mov	rbp, rsp
+      0x400ecc	mov	eax, 0
+      0x400ed1	call	0x400d48
+        0x400d48	push	rbp
+        0x400d49	mov	rbp, rsp
+        0x400d4c	sub	rsp, 0x10
+        0x400d50	lea	rax, qword ptr [rbp - 0x10]
+        0x400d54	mov	edx, 0x10
+        0x400d59	mov	esi, 0
+        0x400d5e	mov	rdi, rax
+        0x400d61	call	0x400b10
+          0x400b10	jmp	qword ptr [rip + 0x208e62]
+           |
+           V
+        0x400d66	mov	edi, 0x408be7
+        0x400d6b	mov	eax, 0
+        0x400d70	call	0x400b00
+          0x400b00	jmp	qword ptr [rip + 0x208e6a]
+           |
+           V
+        0x400d75	lea	rax, qword ptr [rbp - 0x10]
+        0x400d79	mov	edx, 0x10
+        0x400d7e	mov	rsi, rax
+        0x400d81	mov	edi, 0
+        0x400d86	mov	eax, 0
+        0x400d8b	call	0x400b20
+          0x400b20	jmp	qword ptr [rip + 0x208e5a]
+           |
+           V
+          0x400b26	push	7
+          0x400b2b	jmp	0x400aa0
+           |
+           V
+          0x400aa0	push	qword ptr [rip + 0x208e92]
+          0x400aa6	jmp	qword ptr [rip + 0x208e94]
+           |
+           V
+        0x400d90	test	eax, eax
+        0x400d92	jg	0x400d9e
+         |
+         V
+        0x400d9e	mov	rax, qword ptr [rip + 0x208c53]
+        0x400da5	mov	rdi, rax
+        0x400da8	call	0x400ae0
+          0x400ae0	jmp	qword ptr [rip + 0x208e7a]
+           |
+           V
+          0x400ae6	push	3
+          0x400aeb	jmp	0x400aa0
+           |
+           V
+          0x400aa0	push	qword ptr [rip + 0x208e92]
+          0x400aa6	jmp	qword ptr [rip + 0x208e94]
+           |
+           V
+        0x400dad	mov	rdx, rax
+        0x400db0	mov	rcx, qword ptr [rip + 0x208c41]
+        0x400db7	lea	rax, qword ptr [rbp - 0x10]
+        0x400dbb	mov	rsi, rcx
+        0x400dbe	mov	rdi, rax
+        0x400dc1	call	0x400b40
+          0x400b40	jmp	qword ptr [rip + 0x208e4a]
+           |
+           V
+          0x400b46	push	9
+          0x400b4b	jmp	0x400aa0
+           |
+           V
+          0x400aa0	push	qword ptr [rip + 0x208e92]
+          0x400aa6	jmp	qword ptr [rip + 0x208e94]
+           |
+           V
+        0x400dc6	test	eax, eax
+        0x400dc8	je	0x400de7
+         |
+         V
+        0x400dca	lea	rax, qword ptr [rbp - 0x10]
+        0x400dce	mov	rsi, rax
+        0x400dd1	mov	edi, 0x408bf8
+        0x400dd6	mov	eax, 0
+        0x400ddb	call	0x400b00
+          0x400b00	jmp	qword ptr [rip + 0x208e6a]
+           |
+           V
+        0x400de0	mov	eax, 0
+        0x400de5	jmp	0x400dec
+         |
+         V
+        0x400dec	nop	
+        0x400ded	leave	
+        0x400dee	ret	
+         |
+         V
+      0x400ed6	cmp	eax, 1
+      0x400ed9	je	0x400ee2
+       |
+       V
+      0x400edb	mov	eax, 0
+      0x400ee0	jmp	0x400efd
+       |
+       V
+      0x400efd	nop	
+      0x400efe	pop	rbp
+      0x400eff	ret	
+       |
+       V
+    0x40126a	test	eax, eax
+    0x40126c	je	0x401260
+     |
+     V
+    0x401260	mov	eax, 0
+    0x401265	call	0x400ec8
+      0x400ec8	push	rbp
+      0x400ec9	mov	rbp, rsp
+      0x400ecc	mov	eax, 0
+      0x400ed1	call	0x400d48
+        0x400d48	push	rbp
+        0x400d49	mov	rbp, rsp
+        0x400d4c	sub	rsp, 0x10
+        0x400d50	lea	rax, qword ptr [rbp - 0x10]
+        0x400d54	mov	edx, 0x10
+        0x400d59	mov	esi, 0
+        0x400d5e	mov	rdi, rax
+        0x400d61	call	0x400b10
+          0x400b10	jmp	qword ptr [rip + 0x208e62]
+           |
+           V
+        0x400d66	mov	edi, 0x408be7
+        0x400d6b	mov	eax, 0
+        0x400d70	call	0x400b00
+          0x400b00	jmp	qword ptr [rip + 0x208e6a]
+           |
+           V
+        0x400d75	lea	rax, qword ptr [rbp - 0x10]
+        0x400d79	mov	edx, 0x10
+        0x400d7e	mov	rsi, rax
+        0x400d81	mov	edi, 0
+        0x400d86	mov	eax, 0
+        0x400d8b	call	0x400b20
+          0x400b20	jmp	qword ptr [rip + 0x208e5a]
+           |
+           V

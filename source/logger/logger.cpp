@@ -47,8 +47,19 @@ bool Logger::OpenLogFile(const char *log_path, size_t pc_size) {
  *
  * @pc          - The program counter which will be logged.
  */
-void Logger::RecordCycle(uint64_t pc, const string disas) {
-    log_file_ << hex << pc << "\t" << disas << "\n";
+void Logger::RecordLine(Line line) {
+
+    string indentation = std::string(line.level*2, ' ');
+
+    log_file_ << indentation << (void *)line.pc << "\t" << line.mnemonic
+              << "\t" << line.op_str << "\n";
+
+    if ( Disassembler::GetInstance()->IsBranchInstruction(line.mnemonic) ) {
+    //    log_file_ << "------------------------------------------------------------------------\n";
+        log_file_ << indentation << " |\n";
+        log_file_ << indentation << " V\n";
+    //    log_file_ << "------------------------------------------------------------------------\n";
+    }
 }
 
 /*

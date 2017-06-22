@@ -30,13 +30,15 @@ private:
     string program_path_;
     pid_t child_pid_;
     int arch_;
+    vector<uint64_t> ret_addr_;
 
     Tracer();
     bool IdentifyArch(const char *bin_path);
     bool RepeatSingleStep();
     bool HandlerSingleStep();
     bool GetDataFromPID(long pid, uint64_t addr, size_t size, unsigned char **output);
-    bool FreeCode();
+    void PushRetAddr(uint64_t addr);
+    uint64_t PopRetAddr();
 };
 
 #endif
